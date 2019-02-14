@@ -1,9 +1,5 @@
-package cn.xender.paytm_native.api;
+package cn.xender.paytm_native;
 
-import android.content.SharedPreferences;
-import android.widget.Toast;
-
-import com.google.gson.Gson;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
@@ -12,9 +8,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import cn.xender.paytm_native.bean.InitialTransactionJson;
-import cn.xender.paytm_native.callback.OkhttpUtilsCallback;
-import cn.xender.paytm_native.event.InitialTransactionEvent;
 import okhttp3.MediaType;
 
 public class InitialTransactionApi {
@@ -39,26 +32,26 @@ public class InitialTransactionApi {
 
     public void getJson(String mid,String orderId) {
         final String initialTransactionUrl = "https://securegw-stage.Paytm.in/theia/api/v1/initiateTransaction?mid="+mid+"&orderId="+orderId;
-        /**    1.先获取body   */
+
         final JSONObject body = getBody(mid,orderId);
         final JSONObject head = new JSONObject();
-        /**    2.用body去服务器生成checksum，然后把checksum放进head   */
+
         requestChecksum(body.toString(), new OkhttpUtilsCallback() {
             @Override
             public void success(String checksum) {
                 try {
-                    head.put("clientId","C11");//ClientId by which key checksum is created, required to validate the checksum. 不知道该放什么
+                    head.put("clientId","C11");
                     head.put("Version","v1");
                     head.put("requestTimestamp",System.currentTimeMillis());
                     head.put("channelId","APP"); //APP WAP
-                    head.put("Signature",checksum);//Signature就是checksum
+                    head.put("Signature",checksum);
 
                     JSONObject json = new JSONObject();
                     json.put("head",head);
                     json.put("body",body);
 
                     System.out.println("---Rayn json before Initial:"+json);
-                    /**    3.把head和body做成json，去api请求   */
+
                     requestInitialTransactionApi(json,initialTransactionUrl);
 
                 } catch (JSONException e) {
@@ -80,10 +73,6 @@ public class InitialTransactionApi {
                 public void onResponse(String response, int id) {
                     System.out.println("---Rayn InitialTransactionApi onResponse:"+response);
 
-//                    Gson gson = new Gson();
-//                    InitialTransactionJson initialTransactionJson = gson.fromJson(response, InitialTransactionJson.class);
-
-                    EventBus.getDefault().post(new InitialTransactionEvent(response));
                 }
             };
 
@@ -140,7 +129,6 @@ public class InitialTransactionApi {
             body.put("enablePaymentMode",null);//是JSONArray
             body.put("disablepaymentmode",getDisablePaymentModeJson());//是JSONArray
             body.put("promoCode","");
-            /**    callbackUrl 交易结束会走 而且是从客户端访问  */
             body.put("callbackUrl","http://192.168.10.91:9999/callback");
             body.put("goods",getGoodsJson());//是JSONArray
             body.put("shippingInfo",getShippingInfoJson());//是JSONArray
@@ -156,8 +144,8 @@ public class InitialTransactionApi {
     private JSONObject getTxnAmountJson(){
         try {
             JSONObject json = new JSONObject();
-            json.put("value",2.5);//float （但是好像格式并不影响）  value和currency必须小写！
-            json.put("currency","INR");//长度3
+            json.put("value",2.5);//float
+            json.put("currency","INR");//
             return json;
         } catch (JSONException e) {
             e.printStackTrace();
@@ -167,11 +155,11 @@ public class InitialTransactionApi {
     private JSONObject getUserInfoJson(){
         try {
             JSONObject json = new JSONObject();
-            json.put("custId","cid");//长度32
-            json.put("Mobile","9990263484");//长度10
-            json.put("Email","abc@gmail.com");//长度32
-            json.put("firstName","ajay");//长度32
-            json.put("lastName","tomar");//长度32
+            json.put("custId","cid");//
+            json.put("Mobile","9990263484");//
+            json.put("Email","abc@gmail.com");
+            json.put("firstName","ajay");
+            json.put("lastName","tomar");
             return json;
         } catch (JSONException e) {
             e.printStackTrace();
