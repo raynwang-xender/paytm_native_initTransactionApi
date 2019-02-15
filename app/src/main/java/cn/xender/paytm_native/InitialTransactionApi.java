@@ -79,7 +79,7 @@ public class InitialTransactionApi {
             OkHttpUtils
                     .postString()
                     .url(url)
-                    .mediaType(MediaType.parse("application/json"))  //是否需要charset=utf-8   ？
+                    .mediaType(MediaType.parse("application/json"))
                     .content(json.toString())
                     .build()
                     .execute(callback);
@@ -126,12 +126,12 @@ public class InitialTransactionApi {
             body.put("txnAmount",getTxnAmountJson());
             body.put("userInfo",getUserInfoJson());
 //            body.put("PaytmSsoToken","");
-            body.put("enablePaymentMode",null);//是JSONArray
-            body.put("disablepaymentmode",getDisablePaymentModeJson());//是JSONArray
+            body.put("enablePaymentMode",null);
+            body.put("disablepaymentmode",getDisablePaymentModeJson());
             body.put("promoCode","");
             body.put("callbackUrl","http://192.168.10.91:9999/callback");
-            body.put("goods",getGoodsJson());//是JSONArray
-            body.put("shippingInfo",getShippingInfoJson());//是JSONArray
+            body.put("goods",getGoodsJson());
+            body.put("shippingInfo",getShippingInfoJson());
             body.put("extendInfo",getExtendInfo());
             return body;
         } catch (JSONException e) {
